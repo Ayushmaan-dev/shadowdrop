@@ -1,0 +1,75 @@
+{
+    "Data": {
+        "EnableSaving": true,
+        "Objectives": [
+            {
+                "Id": "bb44420f-6f72-4dcb-96d6-c0716bf34faf",
+                "Primary": true,
+                "ResetEvent": null,
+                "IsHidden": true,
+                "SuccessEvent": {
+                    "EventName": "Kill",
+                    "EventValues": {
+                        "RepositoryId": "1b21e6e6-beba-4f7e-8760-e9604a69c569"
+                    }
+                }
+            }
+        ],
+        "Bricks": [
+            "assembly:/_PRO/Scenes/Missions/Paris/_scene_Kamikaze.brick"
+        ],
+        "VR": [
+            {
+                "Quality": "ps4_vr1",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_peacock_ps4_vr1.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_agility_overrides_peacock_ps4_vr1.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_low_performance.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_not_peacock_ps4_vr1.brick"
+                ]
+            },
+            {
+                "Quality": "base",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_peacock.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_agility_overrides_peacock.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_low_performance.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_not_peacock.brick"
+                ]
+            },
+            {
+                "Quality": "better",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_peacock.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_agility_overrides_peacock.brick",
+                    "assembly:/_pro/scenes/missions/paris/vr_overrides_not_peacock.brick"
+                ]
+            }
+        ],
+        "GameChangers": []
+    },
+    "Metadata": {
+        "Id": "2b928d67-c244-4601-bafb-7af664fb17bb",
+        "Title": "UI_CONTRACT_KAMIKAZE_TITLE",
+        "CodeName_Hint": "Kamikaze",
+        "Description": "UI_CONTRACT_KAMIKAZE_DESC",
+        "BriefingVideo": "briefing_kamikaze",
+        "DebriefingVideo": "debriefing_kamikaze",
+        "ScenePath": "assembly:/_PRO/Scenes/Missions/Paris/_scene_paris.entity",
+        "TileImage": "images/contracts/elusive/039_Kamikaze/Title.jpg",
+        "Location": "LOCATION_PARIS",
+        "IsPublished": true,
+        "LastUpdate": "2025-03-27T14:29:03.5873833Z",
+        "CreationTimestamp": "2012-12-12T12:12:12.743Z",
+        "CreatorUserId": "fadb923c-e6bb-4283-a537-eb4d1150262e",
+        "Type": "elusive",
+        "Release": "1.3.x Elusive",
+        "Entitlements": ["LOCATION_PARIS"],
+        "PublicId": "002268191947",
+        "Season": 1
+    },
+    "UserData": {}
+}

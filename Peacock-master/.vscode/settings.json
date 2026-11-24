@@ -1,0 +1,23 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "never"
+    },
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "npm.packageManager": "yarn",
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "eslint.format.enable": true,
+    "search.exclude": {
+        "**/node_modules": true,
+        "THIRDPARTYNOTICES.txt": true,
+        "chunk*.js": true,
+        "yarn.lock": true,
+        "**/.yarn": true
+    },
+    "omnisharp.useModernNet": false,
+    "[json]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    }
+}

@@ -1,0 +1,171 @@
+{
+    "Data": {
+        "EnableSaving": false,
+        "Objectives": [
+            {
+                "Id": "e44846fb-0947-403d-aa65-f5f316ec7d13",
+                "Category": "primary",
+                "ObjectiveType": "",
+                "BriefingName": "UI_CONTRACT_TITANUMARUM_OBJ_1_NAME",
+                "Image": "images/actors/actor_2d30f9a0-5691-4902-9c18-2292f760c773.jpg",
+                "TargetConditions": [
+                    {
+                        "Type": "disguise",
+                        "RepositoryId": "30005896-2b39-49c0-bb04-3475d4a12ae6",
+                        "HardCondition": true
+                    }
+                ],
+                "HUDTemplate": {
+                    "display": "$loc UI_CONTRACT_TITANUMARUM_OBJ_1"
+                },
+                "BriefingText": "$loc UI_CONTRACT_TITANUMARUM_OBJ_1",
+                "Type": "statemachine",
+                "Definition": {
+                    "Scope": "session",
+                    "Context": {
+                        "KilledActors": [],
+                        "Targets": ["2d30f9a0-5691-4902-9c18-2292f760c773"]
+                    },
+                    "States": {
+                        "Start": {
+                            "Kill": [
+                                {
+                                    "Condition": {
+                                        "$and": [
+                                            {
+                                                "$eq": [
+                                                    "$Value.RepositoryId",
+                                                    "2d30f9a0-5691-4902-9c18-2292f760c773"
+                                                ]
+                                            },
+                                            {
+                                                "$eq": [
+                                                    "$Value.OutfitRepositoryId",
+                                                    "30005896-2b39-49c0-bb04-3475d4a12ae6"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "Transition": "Success"
+                                },
+                                {
+                                    "Condition": {
+                                        "$eq": [
+                                            "$Value.RepositoryId",
+                                            "2d30f9a0-5691-4902-9c18-2292f760c773"
+                                        ]
+                                    },
+                                    "Transition": "Failure"
+                                }
+                            ],
+                            "ShamanOutfitLost": { "Transition": "Failure" }
+                        }
+                    }
+                }
+            },
+            {
+                "Id": "23c492af-5dbd-4b46-a13e-0c4733007e51",
+                "Category": "primary",
+                "ObjectiveType": "",
+                "BriefingName": "UI_CONTRACT_TITANUMARUM_OBJ_2_NAME",
+                "Image": "images/actors/actor_4181399f-3042-4c72-afc4-76df4b1b9fe7.jpg",
+                "TargetConditions": [
+                    {
+                        "Type": "disguise",
+                        "RepositoryId": "30005896-2b39-49c0-bb04-3475d4a12ae6",
+                        "HardCondition": true
+                    }
+                ],
+                "HUDTemplate": {
+                    "display": "$loc UI_CONTRACT_TITANUMARUM_OBJ_2"
+                },
+                "BriefingText": "$loc UI_CONTRACT_TITANUMARUM_OBJ_2",
+                "Type": "statemachine",
+                "Definition": {
+                    "Scope": "session",
+                    "Context": {
+                        "KilledActors": [],
+                        "Targets": ["4181399f-3042-4c72-afc4-76df4b1b9fe7"]
+                    },
+                    "States": {
+                        "Start": {
+                            "Kill": [
+                                {
+                                    "Condition": {
+                                        "$and": [
+                                            {
+                                                "$eq": [
+                                                    "$Value.RepositoryId",
+                                                    "4181399f-3042-4c72-afc4-76df4b1b9fe7"
+                                                ]
+                                            },
+                                            {
+                                                "$eq": [
+                                                    "$Value.OutfitRepositoryId",
+                                                    "30005896-2b39-49c0-bb04-3475d4a12ae6"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "Transition": "Success"
+                                },
+                                {
+                                    "Condition": {
+                                        "$eq": [
+                                            "$Value.RepositoryId",
+                                            "4181399f-3042-4c72-afc4-76df4b1b9fe7"
+                                        ]
+                                    },
+                                    "Transition": "Failure"
+                                }
+                            ],
+                            "ShamanOutfitLost": { "Transition": "Failure" }
+                        }
+                    }
+                }
+            }
+        ],
+        "Bricks": [],
+        "GameChangers": ["97350ccb-40a4-41a6-95b9-702e24fb6e8c"],
+        "GameChangerReferences": [],
+        "VR": [
+            {
+                "Quality": "base",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/colombia/vr_overrides_hippo.brick",
+                    "assembly:/_PRO/scenes/missions/colombia/vr_overrides_low_performance.brick"
+                ]
+            },
+            {
+                "Quality": "better",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/colombia/vr_overrides_hippo.brick"
+                ]
+            }
+        ]
+    },
+    "Metadata": {
+        "Id": "50a56b1f-668f-402d-a6b7-0f759b33ca56",
+        "IsPublished": true,
+        "CreationTimestamp": "2018-10-08T15:29:54.4344154Z",
+        "CreatorUserId": "fadb923c-e6bb-4283-a537-eb4d1150262e",
+        "Title": "UI_CONTRACT_TITANUMARUM_LEVEL_2_NAME",
+        "Description": "UI_CONTRACT_TITANUMARUM_LEVEL_2_DESC",
+        "CodeName_Hint": "Titanumarum - Level 2",
+        "Location": "LOCATION_COLOMBIA",
+        "ScenePath": "assembly:/_pro/scenes/missions/colombia/scene_hippo.entity",
+        "Type": "escalation",
+        "Release": "2.1.x Escalation",
+        "InGroup": "be567ad3-23f4-4d0b-9d2e-b261ea845ef0",
+        "GroupObjectiveDisplayOrder": [
+            { "IsNew": true, "Id": "23c492af-5dbd-4b46-a13e-0c4733007e51" },
+            { "Id": "e44846fb-0947-403d-aa65-f5f316ec7d13" }
+        ],
+        "Entitlements": ["LOCATION_COLOMBIA"],
+        "LastUpdate": "2025-09-25T10:59:41.9027233Z",
+        "PublicId": "012331837147"
+    },
+    "UserData": {}
+}

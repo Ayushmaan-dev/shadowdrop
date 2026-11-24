@@ -1,0 +1,55 @@
+{
+    "Data": {
+        "EnableSaving": false,
+        "Objectives": [],
+        "Bricks": [],
+        "GameChangers": [],
+        "VR": [
+            {
+                "Quality": "base",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/coastaltown/vr_overrides_octopus.brick",
+                    "assembly:/_pro/scenes/missions/coastaltown/vr_overrides_low_performance.brick"
+                ]
+            },
+            {
+                "Quality": "better",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/coastaltown/vr_overrides_octopus.brick"
+                ]
+            }
+        ]
+    },
+    "Metadata": {
+        "Id": "994540ee-3900-4a41-9544-17b2196a4b1a",
+        "IsPublished": true,
+        "CreationTimestamp": "2015-11-12T11:51:17.1640201Z",
+        "CreatorUserId": "fadb923c-e6bb-4283-a537-eb4d1150262e",
+        "Title": "UI_CONTRACT_ARTEMISIA_GROUP_TITLE",
+        "Description": "UI_CONTRACT_ARTEMISIA_GROUP_DESC",
+        "CodeName_Hint": "Artemisia Group",
+        "Location": "LOCATION_COASTALTOWN",
+        "TileImage": "images/contracts/escalation/ContractEscalation_Artemisia.jpg",
+        "ScenePath": "assembly:/_PRO/Scenes/Missions/CoastalTown/_scene_octopus.entity",
+        "RequiredUnlockable": "ACCESS_HIT_OCTOPUS",
+        "Type": "escalation",
+        "Release": "1.1.x Escalation",
+        "GroupDefinition": {
+            "Type": "escalation",
+            "Order": [
+                "e4030267-53db-4776-ad58-21332ab39835",
+                "2cbce64b-0d9a-4993-9a22-f39710c412d0",
+                "480950c6-ab74-487c-bddc-d1ad763b3a11",
+                "837e5158-4d6a-4091-8dcf-4040d1e83750",
+                "8500f8dc-d6d8-4fb1-9df2-e8159d8a740e"
+            ]
+        },
+        "Entitlements": ["LOCATION_COASTALTOWN"],
+        "LastUpdate": "2025-09-25T10:59:36.4607709Z",
+        "PublicId": "003318137547",
+        "Season": 1
+    },
+    "UserData": {}
+}

@@ -1,0 +1,767 @@
+/*
+ *     The Peacock Project - a HITMAN server replacement.
+ *     Copyright (C) 2021-2026 The Peacock Project Team
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Affero General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Affero General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Affero General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import { getConfig, getVersionedConfig } from "./configSwizzleManager"
+import type { GameVersion, Unlockable, UserProfile } from "./types/types"
+import {
+    brokenItems,
+    CONCRETEART_UNLOCKABLES,
+    BAIJU_UNLOCKABLES,
+    BELLINI_UNLOCKABLES,
+    DELUXE_UNLOCKABLES,
+    EXECUTIVE_UNLOCKABLES,
+    FRENCHMARTINI_UNLOCKABLES,
+    H1_GOTY_UNLOCKABLES,
+    H1_REQUIEM_UNLOCKABLES,
+    H2_RACCOON_STINGRAY_UNLOCKABLES,
+    LAMBIC_UNLOCKABLES,
+    MAKESHIFT_UNLOCKABLES,
+    PENICILLIN_UNLOCKABLES,
+    SAMBUCA_UNLOCKABLES,
+    SIN_ENVY_UNLOCKABLES,
+    SIN_GLUTTONY_UNLOCKABLES,
+    SIN_GREED_UNLOCKABLES,
+    SIN_LUST_UNLOCKABLES,
+    SIN_PRIDE_UNLOCKABLES,
+    SIN_SLOTH_UNLOCKABLES,
+    SIN_WRATH_UNLOCKABLES,
+    SMART_CASUAL_UNLOCKABLES,
+    TOMORROWLAND_UNLOCKABLES,
+    TRINITY_UNLOCKABLES,
+    WINTERSPORTS_UNLOCKABLES,
+    FILUR_UNLOCKABLES,
+} from "./ownership"
+import { EPIC_NAMESPACE_2016 } from "./platformEntitlements"
+import type { Controller } from "./controller"
+import { getUserData } from "./databaseHandler"
+import assert from "assert"
+import { getFlag } from "./flags"
+import { UnlockableMasteryData } from "./types/mastery"
+import { attainableDefaults, defaultSuits } from "./utils"
+import { log, LogLevel } from "./loggingInterop"
+
+export const ISOLATED_UNLOCKABLES_EXEMPT = [
+    "TOKEN_OUTFIT_HERO_BLACKSPECIAL_SUIT", // Black Streak Suit
+    "TOKEN_OUTFIT_HERO_MINININJA_SUIT", // Futo Suit
+    "TOKEN_OUTFIT_HERO_FREEDOMFIGHTERS_SUIT", // Freedom Phantom Suit
+    "TOKEN_OUTFIT_HERO_LYNCH_SUIT", // Lynch Suit
+]
+
+const DELUXE_DATA = [
+    ...CONCRETEART_UNLOCKABLES,
+    ...DELUXE_UNLOCKABLES,
+    ...EXECUTIVE_UNLOCKABLES,
+    ...H1_GOTY_UNLOCKABLES,
+    ...H1_REQUIEM_UNLOCKABLES,
+    ...H2_RACCOON_STINGRAY_UNLOCKABLES,
+    ...MAKESHIFT_UNLOCKABLES,
+    ...SIN_ENVY_UNLOCKABLES,
+    ...SIN_GLUTTONY_UNLOCKABLES,
+    ...SIN_GREED_UNLOCKABLES,
+    ...SIN_LUST_UNLOCKABLES,
+    ...SIN_PRIDE_UNLOCKABLES,
+    ...SIN_SLOTH_UNLOCKABLES,
+    ...SIN_WRATH_UNLOCKABLES,
+    ...TRINITY_UNLOCKABLES,
+    ...WINTERSPORTS_UNLOCKABLES,
+    ...SAMBUCA_UNLOCKABLES,
+    ...PENICILLIN_UNLOCKABLES,
+    ...TOMORROWLAND_UNLOCKABLES,
+    ...LAMBIC_UNLOCKABLES,
+    ...FRENCHMARTINI_UNLOCKABLES,
+    ...BAIJU_UNLOCKABLES,
+    ...BELLINI_UNLOCKABLES,
+    ...FILUR_UNLOCKABLES,
+]
+
+/**
+ * An inventory item.
+ */
+export interface InventoryItem {
+    InstanceId: string
+    ProfileId: string
+    Unlockable: Unlockable
+    Properties: Record<string, string>
+}
+
+// region InventoryService
+
+export class InventoryService {
+    // TODO: What is the overhead of storing inventory objects vs IDs?
+    private inventoryUserCache: Map<string, InventoryItem[]> = new Map()
+
+    /**
+     * We use maps here instead of objects because we don't want V8 to fall back to
+     * slow property lookups.
+     */
+    private unlockableCaches: Record<GameVersion, Map<string, Unlockable>> = {
+        scpc: new Map<string, Unlockable>(),
+        h1: new Map<string, Unlockable>(),
+        h2: new Map<string, Unlockable>(),
+        h3: new Map<string, Unlockable>(),
+    }
+
+    constructor(private readonly controller: Controller) {}
+
+    /**
+     * Clears a user's inventory.
+     *
+     * @param userId The user's ID.
+     */
+    clearInventoryFor(userId: string): void {
+        this.inventoryUserCache.delete(userId)
+    }
+
+    /**
+     * Clears the entire inventory cache.
+     */
+    clearInventoryCache(): void {
+        this.inventoryUserCache.clear()
+    }
+
+    /**
+     * Get an unlockable by its ID, lazy-loading the unlockable cache if necessary.
+     *
+     * @param id The unlockable's ID.
+     * @param gameVersion The current game version.
+     * @see getUnlockablesById
+     */
+    getUnlockableById(
+        id: string,
+        gameVersion: GameVersion,
+    ): Unlockable | undefined {
+        if (this.unlockableCaches[gameVersion].size === 0) {
+            // no data is loaded yet (to save memory), so load it now
+            let unlockables = getVersionedConfig<readonly Unlockable[]>(
+                "allunlockables",
+                gameVersion,
+                false,
+            )
+
+            if (["h2", "h3"].includes(gameVersion)) {
+                unlockables = [
+                    ...unlockables,
+                    ...getConfig<readonly Unlockable[]>(
+                        "SniperUnlockables",
+                        false,
+                    ),
+                    ...getConfig<readonly Unlockable[]>(
+                        "VersusUnlockables",
+                        false,
+                    ),
+                ]
+            }
+
+            for (const unlockable of unlockables) {
+                this.unlockableCaches[gameVersion].set(
+                    unlockable.Id,
+                    unlockable,
+                )
+            }
+
+            log(
+                LogLevel.DEBUG,
+                `Lazy-loaded ${unlockables.length} unlockables for ${gameVersion}`,
+            )
+        }
+
+        return this.unlockableCaches[gameVersion].get(id)
+    }
+
+    /**
+     * Multi-getter for unlockables.
+     *
+     * @param ids The unlockable IDs to get.
+     * @param gameVersion The current game version.
+     * @see getUnlockableById
+     */
+    getUnlockablesById(
+        ids: string[],
+        gameVersion: GameVersion,
+    ): (Unlockable | undefined)[] {
+        return ids.map((id) => this.getUnlockableById(id, gameVersion))
+    }
+
+    /**
+     * Gets the default suit for a given sub-location and parent location.
+     * Priority is given to the sub-location, then the parent location, then 47's signature suit.
+     */
+    getDefaultSuitFor(
+        subLocation: Unlockable,
+        gameVersion: GameVersion,
+        suitOverride?: string | undefined,
+    ): string {
+        type Cast = keyof typeof defaultSuits
+        return suitOverride && this.getUnlockableById(suitOverride, gameVersion)
+            ? suitOverride
+            : defaultSuits[subLocation.Id as Cast] ||
+                  defaultSuits[subLocation.Properties.ParentLocation as Cast] ||
+                  "TOKEN_OUTFIT_HITMANSUIT"
+    }
+
+    /**
+     * Given an inventory and a sublocation, returns a new inventory with
+     * the default suit for the sublocation added if it is not already present.
+     */
+    private updateWithDefaultSuit(
+        profileId: string,
+        gameVersion: GameVersion,
+        inv: InventoryItem[],
+        sublocation?: Unlockable,
+        suitOverride?: string | undefined,
+    ): InventoryItem[] {
+        if (!sublocation) {
+            return inv
+        }
+
+        // Yes this is slow. We should organize the unlockables into a { [Id: string]: Unlockable } map.
+        const locationSuit = this.getUnlockableById(
+            this.getDefaultSuitFor(sublocation, gameVersion, suitOverride),
+            gameVersion,
+        )
+
+        if (!locationSuit) {
+            return inv
+        }
+
+        // We need to add a suit, so need to copy the cache to prevent modifying it.
+        const newInv = [...inv]
+
+        // check if any inventoryItem's unlockable is the default suit for the sublocation
+        if (newInv.every((i) => i.Unlockable.Id !== locationSuit.Id)) {
+            // if not, add it
+            newInv.push({
+                InstanceId: locationSuit.Guid,
+                ProfileId: profileId,
+                Unlockable: locationSuit,
+                Properties: {},
+            })
+        }
+
+        return newInv
+    }
+
+    /**
+     * Filters unlocked unlockables
+     */
+    private filterUnlockedContent(
+        userProfile: UserProfile,
+        packagedUnlocks: Map<string, boolean>,
+        challengesUnlockables: Record<string, string>,
+        gameVersion: GameVersion,
+    ) {
+        return (acc: [Unlockable[], Unlockable[]], unlockable: Unlockable) => {
+            let unlockableChallengeId: string
+            let unlockableMasteryData: UnlockableMasteryData | undefined
+
+            // Handles unlockables that belong to a package or unlocked gear from evergreen
+            if (packagedUnlocks.has(unlockable.Id)) {
+                if (packagedUnlocks.get(unlockable.Id)) {
+                    acc[0].push(unlockable)
+                }
+            }
+
+            // Handles packages
+            else if (unlockable.Type === "package") {
+                for (const pkgUnlockableId of unlockable.Properties.Unlocks ||
+                    []) {
+                    packagedUnlocks.set(pkgUnlockableId, true)
+                }
+
+                acc[0].push(unlockable)
+            }
+
+            // If the unlockable is challenge reward, check if user has the challenge completed
+            else if (
+                (unlockableChallengeId = challengesUnlockables[unlockable.Id])
+            ) {
+                const challenge =
+                    userProfile.Extensions?.ChallengeProgression?.[
+                        unlockableChallengeId
+                    ]
+
+                if (challenge?.Completed) acc[0].push(unlockable)
+            }
+
+            // If the unlockable is mastery locked, checks if its unlocked based on user location progression
+            else if (
+                (unlockableMasteryData =
+                    this.controller.masteryService.getMasteryForUnlockable(
+                        unlockable,
+                        gameVersion,
+                    ))
+            ) {
+                const locationData =
+                    this.controller.progressionService.getMasteryProgressionForLocation(
+                        userProfile,
+                        unlockableMasteryData.Location,
+                        unlockableMasteryData.SubPackageId,
+                    )
+
+                assert.ok(
+                    locationData,
+                    `location ${unlockableMasteryData.Location} (subPackageId: ${unlockableMasteryData.SubPackageId}) not found`,
+                )
+
+                const canUnlock =
+                    locationData.Level >= unlockableMasteryData.Level
+
+                if (canUnlock && unlockable.Type !== "evergreenmastery") {
+                    acc[0].push(unlockable)
+                }
+
+                // If the unlock is an evergreen package, adds its unlockables to the list
+                if (
+                    unlockable.Type === "evergreenmastery" &&
+                    unlockable.Properties.Unlocks
+                )
+                    for (const evergreenGearId of unlockable.Properties
+                        .Unlocks) {
+                        packagedUnlocks.set(evergreenGearId, canUnlock)
+                    }
+            } else {
+                const isEvergreen =
+                    unlockable.Type === "evergreenmastery" ||
+                    unlockable.Subtype === "evergreen"
+                const isDeluxe = DELUXE_DATA.includes(unlockable.Id)
+
+                if (isEvergreen || isDeluxe) {
+                    acc[0].push(unlockable)
+                } else if (
+                    ISOLATED_UNLOCKABLES_EXEMPT.includes(unlockable.Id) ||
+                    getFlag("enableIsolatedUnlockables")
+                ) {
+                    /**
+                     *  List of untracked items when they are enabled (to award to user until they are tracked to corresponding challenges)
+                     */
+                    acc[1].push(unlockable)
+                }
+            }
+
+            return acc
+        }
+    }
+
+    /**
+     * Filters allowed unlockables
+     */
+    private filterAllowedContent(gameVersion: GameVersion, entP: string[]) {
+        return function (unlockContainer?: {
+            InstanceId: string
+            ProfileId: string
+            Unlockable: Unlockable
+            Properties: object
+        }) {
+            if (!unlockContainer) {
+                return false
+            }
+
+            if (
+                unlockContainer.Unlockable.Type === "disguise" &&
+                !unlockContainer.Unlockable.Properties.OrderIndex
+            ) {
+                return false
+            }
+
+            if (gameVersion === "h1") {
+                return true
+            }
+
+            const e = entP
+            const { Id: id } = unlockContainer!.Unlockable
+
+            if (!e) {
+                return false
+            }
+
+            if (unlockContainer.Unlockable.Type === "evergreenmastery") {
+                return false
+            }
+
+            // This way of doing entitlements is a mess, redo this! - AF
+            if (gameVersion === "h3") {
+                if (WINTERSPORTS_UNLOCKABLES.includes(id)) {
+                    return (
+                        e.includes("afa4b921503f43339c360d4b53910791") ||
+                        e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                        e.includes("1829590")
+                    )
+                }
+
+                if (EXECUTIVE_UNLOCKABLES.includes(id)) {
+                    return (
+                        e.includes("6408de14f7dc46b9a33adcf6cbc4d159") ||
+                        e.includes("afa4b921503f43339c360d4b53910791") ||
+                        e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                        e.includes("1829590")
+                    )
+                }
+
+                if (SMART_CASUAL_UNLOCKABLES.includes(id)) {
+                    return (
+                        e.includes("6408de14f7dc46b9a33adcf6cbc4d159") ||
+                        e.includes("afa4b921503f43339c360d4b53910791") ||
+                        e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                        e.includes("1829590")
+                    )
+                }
+
+                if (H1_REQUIEM_UNLOCKABLES.includes(id)) {
+                    return (
+                        e.includes("e698e1a4b63947b0bc9349a5ae2dc015") ||
+                        e.includes("a3509775467d4d6a8a7adffe518dc204") || // WoA Standard
+                        e.includes("1843460")
+                    )
+                }
+
+                if (H1_GOTY_UNLOCKABLES.includes(id)) {
+                    return (
+                        e.includes("894d1e6771044f48a8fdde934b8e443a") ||
+                        e.includes("a3509775467d4d6a8a7adffe518dc204") || // WoA Standard
+                        e.includes("1843460") ||
+                        e.includes("1829595")
+                    )
+                }
+
+                if (H2_RACCOON_STINGRAY_UNLOCKABLES.includes(id)) {
+                    return (
+                        e.includes("afa4b921503f43339c360d4b53910791") ||
+                        e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                        e.includes("1829590")
+                    )
+                }
+            } else if (gameVersion === "h2") {
+                if (WINTERSPORTS_UNLOCKABLES.includes(id)) {
+                    return e.includes("957693")
+                }
+            } else if (
+                // @ts-expect-error The types do actually overlap, but there is no way to show that.
+                gameVersion === "h1" &&
+                (e.includes("0a73eaedcac84bd28b567dbec764c5cb") ||
+                    e.includes(EPIC_NAMESPACE_2016))
+            ) {
+                // h1 EGS
+                if (
+                    H1_REQUIEM_UNLOCKABLES.includes(id) ||
+                    H1_GOTY_UNLOCKABLES.includes(id)
+                ) {
+                    return e.includes("81aecb49a60b47478e61e1cbd68d63c5")
+                }
+            }
+
+            if (DELUXE_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("bc610b36c75442299edcbe99f6f0fb60") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829591")
+                )
+            }
+
+            if (SIN_GREED_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("0e8632b4cdfb415e94291d97d727b98d") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829580")
+                )
+            }
+
+            if (SIN_PRIDE_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("3f9adc216dde44dda5e829f11740a0a2") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829581")
+                )
+            }
+
+            if (SIN_SLOTH_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("aece009ff59441c0b526f8aa69e24cfb") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829582")
+                )
+            }
+
+            if (SIN_LUST_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("dfe5aeb89976450ba1e0e2c208b63d33") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829583")
+                )
+            }
+
+            if (SIN_GLUTTONY_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("30107bff80024d1ab291f9cd3bac9fac") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829584")
+                )
+            }
+
+            if (SIN_ENVY_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("0403062df0d347619c8dcf043c65c02e") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829585")
+                )
+            }
+
+            if (SIN_WRATH_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("9e936ed2507a473db6f53ad24d2da587") ||
+                    e.includes("84a1a6fda4fb48afbb78ee9b2addd475") || // WoA Deluxe
+                    e.includes("1829586")
+                )
+            }
+
+            if (TRINITY_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("5d06a6c6af9b4875b3530d5328f61287") ||
+                    e.includes("1829596")
+                )
+            }
+
+            if (MAKESHIFT_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("08d2bc4d20754191b6c488541d2b4fa1") ||
+                    e.includes("2184791")
+                )
+            }
+
+            if (CONCRETEART_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("a1e9a63fa4f3425aa66b9b8fa3c9cc35") ||
+                    e.includes("2184790")
+                )
+            }
+
+            if (SAMBUCA_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("9220c020262f420da06eb46a4b1ce86f") ||
+                    e.includes("2828470")
+                )
+            }
+
+            if (PENICILLIN_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("6cdf07da030d4f66acd50eaf3cd234c7") ||
+                    e.includes("2973650")
+                )
+            }
+
+            if (TOMORROWLAND_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("f04198e0ffcf49079b5ec77bb6b66891") ||
+                    e.includes("3110360")
+                )
+            }
+
+            if (LAMBIC_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("70a9afcc8de84b6ab0f2b45b2018559b") ||
+                    e.includes("3254350")
+                )
+            }
+
+            if (FRENCHMARTINI_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("256eeeb3d8044aa1840e1606d268e0b2") ||
+                    e.includes("3711140")
+                )
+            }
+
+            if (BAIJU_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("04cb1b3e5b424308be25236f6bc1b2fb") ||
+                    e.includes("3957470")
+                )
+            }
+
+            if (BELLINI_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("0047ddcd5e6846e881f1037c1416e3d9") ||
+                    e.includes("4097630")
+                )
+            }
+
+            if (FILUR_UNLOCKABLES.includes(id)) {
+                return (
+                    e.includes("b135c766d25948c39d7dd316dbc4db53") ||
+                    e.includes("4328240")
+                )
+            }
+
+            return true
+        }
+    }
+
+    /**
+     * Generate a player's inventory with unlockables.
+     * @param profileId  The profile ID of the player
+     * @param gameVersion  The game version
+     * @param sublocation  The sublocation to generate the inventory for. Used to award default suits for the sublocation. Defaulted to undefined.
+     * @param suitOverride A default suit override for this contract. Defaulted to undefined.
+     * @returns The player's inventory
+     */
+    createInventory(
+        profileId: string,
+        gameVersion: GameVersion,
+        sublocation: Unlockable | undefined = undefined,
+        suitOverride?: string | undefined,
+    ): InventoryItem[] {
+        if (this.inventoryUserCache.has(profileId)) {
+            return this.updateWithDefaultSuit(
+                profileId,
+                gameVersion,
+                this.inventoryUserCache.get(profileId)!,
+                sublocation,
+                suitOverride,
+            )
+        }
+
+        // Get user data to check on location progression
+        const userProfile = getUserData(profileId, gameVersion)
+
+        // add all unlockables to player's inventory
+        const allunlockables = [
+            ...getVersionedConfig<Unlockable[]>(
+                "allunlockables",
+                gameVersion,
+                true,
+            ),
+            ...getConfig<Unlockable[]>("SniperUnlockables", true),
+            ...getConfig<Unlockable[]>("VersusUnlockables", true),
+        ].filter(
+            (u) =>
+                u.Properties && // remove broken unlockables with no properties
+                u.Type !== "location", // locations do not go in inventory
+        )
+
+        let unlockables: Unlockable[] = allunlockables
+
+        if (getFlag("enableMasteryProgression")) {
+            const packagedUnlocks: Map<string, boolean> = new Map()
+
+            const challengesUnlockables =
+                this.controller.challengeService.getChallengesUnlockables(
+                    gameVersion,
+                )
+
+            /**
+             * Separates unlockable types and lookup for progression level
+             * on unlockables that are locked behind mastery progression level
+             */
+            const [unlockedItems, otherItems]: [Unlockable[], Unlockable[]] =
+                allunlockables
+                    // Sorts packages and evergreen gear wrappers first, so related unlockables can be targeted after
+                    .sort((_, b) =>
+                        b.Type === "package" ||
+                        (b.Type === "evergreenmastery" && b.Properties.Unlocks)
+                            ? 1
+                            : -1,
+                    )
+                    .reduce(
+                        this.filterUnlockedContent(
+                            userProfile,
+                            packagedUnlocks,
+                            challengesUnlockables,
+                            gameVersion,
+                        ),
+                        [[], []],
+                    )
+
+            unlockables = [...unlockedItems, ...otherItems]
+        }
+
+        // If getDefaultSuits is turned off, then only give attainable suits and lock everything else.
+        // The mastery check has already locked any unattained attainable suits,
+        // and location-wide default suits will be given afterwards.
+        const defaults = Object.values(defaultSuits)
+
+        if (!getFlag("getDefaultSuits")) {
+            unlockables = unlockables.filter(
+                (u) =>
+                    !defaults.includes(u.Id) ||
+                    attainableDefaults(gameVersion).includes(u.Id),
+            )
+        }
+
+        const filtered = unlockables
+            .map((unlockable) => {
+                if (brokenItems.includes(unlockable.Guid)) {
+                    return undefined
+                }
+
+                unlockable.GameAsset = null
+                unlockable.DisplayNameLocKey = `UI_${unlockable.Id}_NAME`
+                return {
+                    InstanceId: unlockable.Guid,
+                    ProfileId: profileId,
+                    Unlockable: unlockable,
+                    Properties: {},
+                }
+            })
+            // filter again, this time removing legacy unlockables
+            .filter(
+                this.filterAllowedContent(
+                    gameVersion,
+                    userProfile.Extensions.entP,
+                ),
+            ) as InventoryItem[]
+
+        for (const unlockable of filtered) {
+            unlockable!.ProfileId = profileId
+        }
+
+        this.inventoryUserCache.set(profileId, filtered)
+
+        // It is highly unlikely that we need to add a suit but we don't have the inventory in cache, but just in case
+        return this.updateWithDefaultSuit(
+            profileId,
+            gameVersion,
+            filtered,
+            sublocation,
+        )
+    }
+
+    grantDrops(profileId: string, drops: Unlockable[]): void {
+        if (!this.inventoryUserCache.has(profileId)) {
+            assert.fail(`User ${profileId} does not have an inventory??!`)
+        }
+
+        if (!getFlag("enableMasteryProgression")) {
+            // mastery is disabled, everything is already unlocked, don't double-unlock
+            return
+        }
+
+        const inventoryItems: InventoryItem[] = drops.map((unlockable) => ({
+            InstanceId: unlockable.Guid,
+            ProfileId: profileId,
+            Unlockable: unlockable,
+            Properties: {},
+        }))
+
+        this.inventoryUserCache.set(profileId, [
+            ...new Set([
+                ...(this.inventoryUserCache.get(profileId) || []),
+                ...inventoryItems.filter(
+                    (invItem) => invItem.Unlockable.Type !== "evergreenmastery",
+                ),
+            ]),
+        ])
+    }
+}

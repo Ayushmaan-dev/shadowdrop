@@ -1,0 +1,54 @@
+{
+    "Data": {
+        "EnableSaving": false,
+        "Objectives": [],
+        "Bricks": [],
+        "GameChangers": [],
+        "GameChangerReferences": [],
+        "VR": [
+            {
+                "Quality": "base",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/miami/vr_overrides_flamingo.brick",
+                    "assembly:/_PRO/scenes/missions/miami/vr_overrides_low_performance.brick"
+                ]
+            },
+            {
+                "Quality": "better",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/miami/vr_overrides_flamingo.brick"
+                ]
+            }
+        ]
+    },
+    "Metadata": {
+        "Id": "d0f44e71-6eab-4af4-9484-78d61dbe376a",
+        "IsPublished": true,
+        "CreationTimestamp": "2018-11-26T11:20:35.8478672Z",
+        "CreatorUserId": "fadb923c-e6bb-4283-a537-eb4d1150262e",
+        "TileImage": "images/contracts/escalation/ContractEscalation_Plumbago.jpg",
+        "Title": "UI_CONTRACT_PLUMBAGO_GROUP_TITLE",
+        "Description": "UI_CONTRACT_PLUMBAGO_GROUP_DESC",
+        "CodeName_Hint": "Plumbago Group",
+        "RequiredUnlockable": "ACCESS_HIT_FLAMINGO",
+        "Location": "LOCATION_MIAMI",
+        "ScenePath": "assembly:/_pro/scenes/missions/miami/scene_flamingo.entity",
+        "Release": "2.1.x Escalation",
+        "Type": "escalation",
+        "GroupDefinition": {
+            "Type": "escalation",
+            "Order": [
+                "e155844a-032c-4b71-91a4-b1206e0f6a8c",
+                "3063ccc6-9fa5-439f-9a9f-72a1b81c369e",
+                "4a0a66d4-0a53-4cfd-8122-978226b4e072"
+            ]
+        },
+        "Entitlements": ["LOCATION_MIAMI"],
+        "LastUpdate": "2025-09-25T10:59:37.2309454Z",
+        "PublicId": "011113628547",
+        "Season": 2
+    },
+    "UserData": {}
+}

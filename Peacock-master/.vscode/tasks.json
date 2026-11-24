@@ -1,0 +1,43 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "command": "yarn build",
+            "label": "yarn build",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "yarn optimize",
+            "label": "yarn optimize",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "yarn install",
+            "label": "yarn install",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "yarn typecheck",
+            "label": "yarn typecheck",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "yarn prettier",
+            "label": "yarn prettier",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "yarn install",
+            "label": "yarn install",
+            "problemMatcher": []
+        }
+    ]
+}

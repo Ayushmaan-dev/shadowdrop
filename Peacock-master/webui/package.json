@@ -1,0 +1,40 @@
+{
+    "name": "@peacockproject/web-ui",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@radix-ui/react-alert-dialog": "^1.0.5",
+        "axios": "^1.15.2",
+        "clsx": "^2.1.1",
+        "immer": "^10.1.1",
+        "infima": "0.2.0-alpha.38",
+        "json-keys-sort": "^2.1.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^6.23.1",
+        "swr": "^2.3.3"
+    },
+    "scripts": {
+        "webui:build": "vite build",
+        "webui:start": "vite",
+        "build": "vite build",
+        "start": "vite",
+        "typecheck-ws": "tsc"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.3",
+        "@types/react-dom": "^18.3.0",
+        "rollup-plugin-license": "^3.4.0",
+        "typescript": "5.8.2",
+        "vite": "^8.0.1"
+    },
+    "peerDependencies": {
+        "rollup": "*"
+    },
+    "peerDependenciesMeta": {
+        "rollup": {
+            "optional": true
+        }
+    }
+}

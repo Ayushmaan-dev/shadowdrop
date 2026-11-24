@@ -1,0 +1,531 @@
+{
+    "7138fd16-4d15-4cca-816b-958e2f3a8164": {
+        "Name": "UI_PEACOCK_YANNINI_WHEREAMI",
+        "Description": "UI_PEACOCK_YANNINI_WHEREAMI_DETAILS",
+        "TileImage": "images/contracts/escalation/contractescalation_yannini_yearning_whereami.jpg",
+        "Icon": "images/challenges/default_challenge_icon.png",
+        "ObjectivesCategory": "primary",
+        "IsHidden": null,
+        "Resource": [],
+        "Objectives": []
+    },
+    "6a628ec5-a1d7-4a7e-9b25-b66e740ea6a6": {
+        "Name": "UI_PEACOCK_NO_WAITER",
+        "Description": "UI_PEACOCK_NO_WAITER_DETAILS",
+        "TileImage": "images/contracts/escalation/contractescalation_yannini_yearning_colorblossom.jpg",
+        "Icon": "images/challenges/default_challenge_icon.png",
+        "ObjectivesCategory": "primary",
+        "IsHidden": null,
+        "Resource": [],
+        "Objectives": []
+    },
+    "e99b499a-d309-485e-96a5-beb4c398a596": {
+        "Name": "UI_PEACOCK_GLOBAL_CAMERA_FAIL",
+        "Description": "UI_PEACOCK_GLOBAL_CAMERA_FAIL_DESC",
+        "TileImage": "images/contracts/gamechangers/gamechanger_global_bigbrother.jpg",
+        "Icon": "images/challenges/default_challenge_icon.png",
+        "ObjectivesCategory": "primary",
+        "IsHidden": null,
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "0c0f7ac5-5fb9-45ff-b909-71cd2cd93e81",
+                "Category": "primary",
+                "ExcludeFromScoring": true,
+                "OnActive": {
+                    "IfCompleted": {
+                        "Visible": false
+                    }
+                },
+                "BriefingText": "$loc UI_GAMECHANGERS_GLOBAL_CONTRACTCONDITION_DO_NOT_GET_SPOTTED_PRIMARY_FAIL",
+                "Type": "statemachine",
+                "Definition": {
+                    "Context": {},
+                    "States": {
+                        "Start": {
+                            "-": {
+                                "Transition": "Success"
+                            }
+                        },
+                        "Success": {
+                            "SecuritySystemRecorder": {
+                                "Condition": {
+                                    "$eq": ["$Value.event", "spotted"]
+                                },
+                                "Transition": "Failure"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "834a20cc-7cfc-4ec3-8858-c3a213e3de56": {
+        "Name": "UI_GAMECHANGERS_GLOBAL_KILL_STREAK_10_SEC_NAME",
+        "Description": "UI_GAMECHANGERS_GLOBAL_KILL_STREAK_10_SEC_DESC",
+        "TileImage": "images/contracts/gamechangers/Gamechanger_Global_KillStreak.jpg",
+        "Icon": "images/challenges/default_challenge_icon.png",
+        "ObjectivesCategory": "primary",
+        "IsHidden": null,
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "a382704d-0814-4853-ad4d-dd3acc864b50",
+                "Category": "primary",
+                "OnActive": {
+                    "IfCompleted": {
+                        "Visible": false
+                    }
+                },
+                "BriefingText": "$loc UI_GAMECHANGERS_GLOBAL_KILL_STREAK_30_SEC_2_TARGETS_NAME",
+                "HUDTemplate": {
+                    "display": "$loc UI_GAMECHANGERS_GLOBAL_KILL_STREAK_30_SECS_OBJ"
+                },
+                "Type": "statemachine",
+                "Definition": {
+                    "Scope": "session",
+                    "Context": {
+                        "AmountToKill": 4
+                    },
+                    "States": {
+                        "Start": {
+                            "-": {
+                                "Transition": "Success"
+                            }
+                        },
+                        "Success": {
+                            "Kill": {
+                                "Condition": {
+                                    "$eq": ["$Value.IsTarget", true]
+                                },
+                                "Actions": {
+                                    "$dec": "AmountToKill"
+                                },
+                                "Transition": "CheckCount"
+                            }
+                        },
+                        "CheckCount": {
+                            "-": [
+                                {
+                                    "Condition": {
+                                        "$eq": ["$.AmountToKill", 0]
+                                    },
+                                    "Transition": "Success"
+                                },
+                                {
+                                    "Transition": "InKillStreak"
+                                }
+                            ]
+                        },
+                        "InKillStreak": {
+                            "$timer": {
+                                "Condition": {
+                                    "$after": 10
+                                },
+                                "Transition": "Failure"
+                            },
+                            "Kill": {
+                                "Condition": {
+                                    "$eq": ["$Value.IsTarget", true]
+                                },
+                                "Actions": {
+                                    "$dec": "AmountToKill"
+                                },
+                                "Transition": "CheckCount"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "5e2a1492-a099-c696-529e-1e56171e352d": {
+        "Name": "UI_PEACOCK_GAMECHANGERS_NEWZEALAND_NOBODIESHIDDEN_NAME",
+        "Description": "UI_PEACOCK_GAMECHANGERS_NEWZEALAND_NOBODIESHIDDEN_DESC",
+        "Icon": null,
+        "IsHidden": null,
+        "TileImage": "images/contracts/gamechangers/gamechanger_newzealand_nobodieshidden.jpg",
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "24117450-5b77-e077-e1f1-20236e5d347a",
+                "Category": "primary",
+                "Type": "statemachine",
+                "ObjectiveType": "condition",
+                "HUDTemplate": {
+                    "display": "$loc UI_PEACOCK_GAMECHANGERS_NEWZEALAND_NOBODIESHIDDEN_NAME",
+                    "iconType": 17
+                },
+                "Definition": {
+                    "Scope": "session",
+                    "States": {
+                        "Start": {
+                            "-": {
+                                "Transition": "Success"
+                            }
+                        },
+                        "Success": {
+                            "BodyHidden": {
+                                "Transition": "Failure"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "c3fcd3d7-6192-e400-7dfb-4f0b6227b04c": {
+        "Name": "UI_PEACOCK_GAMECHANGERS_NEWZEALAND_CHANGEWEAPON_NAME",
+        "Description": "UI_PEACOCK_GAMECHANGERS_NEWZEALAND_CHANGEWEAPON_DESC",
+        "Icon": null,
+        "IsHidden": null,
+        "TileImage": "images/contracts/gamechangers/gamechanger_newzealand_changeweapon.jpg",
+        "ObjectivesCategory": "primary",
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "8d969eef-6ec2-9a3a-98fe-8a5ec5f02895",
+                "Category": "primary",
+                "Type": "statemachine",
+                "ObjectiveType": "condition",
+                "ExcludeFromScoring": true,
+                "OnActive": {
+                    "IfCompleted": {
+                        "Visible": false
+                    }
+                },
+                "Definition": {
+                    "Scope": "session",
+                    "States": {
+                        "Start": {
+                            "-": {
+                                "Transition": "Success"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "98223196-71ea-60c3-962c-b856ee8cc2e7": {
+        "Name": "UI_PEACOCK_GAMECHANGERS_GLOBAL_HEADKILLONLY_NAME",
+        "Description": "UI_PEACOCK_GAMECHANGERS_GLOBAL_HEADKILLONLY_DESC",
+        "Icon": null,
+        "IsHidden": null,
+        "TileImage": "images/contractconditions/condition_contrac_headshots_only.jpg",
+        "ObjectivesCategory": "primary",
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "0b4e7a06-c544-987a-e0bd-8f6ad23406a4",
+                "Category": "secondary",
+                "AllowEtRestartOnSuccess": true,
+                "BriefingText": "$loc UI_PEACOCK_GAMECHANGERS_GLOBAL_HEADKILLONLY_DESC",
+                "HUDTemplate": {
+                    "display": "$loc UI_PEACOCK_GAMECHANGERS_GLOBAL_HEADKILLONLY_NAME",
+                    "iconType": 17
+                },
+                "Type": "statemachine",
+                "Definition": {
+                    "Scope": "session",
+                    "States": {
+                        "Start": {
+                            "-": {
+                                "Transition": "Success"
+                            }
+                        },
+                        "Success": {
+                            "Kill": {
+                                "Condition": {
+                                    "$and": [
+                                        {
+                                            "$eq": ["$Value.IsTarget", true]
+                                        },
+                                        {
+                                            "$not": {
+                                                "$or": [
+                                                    {
+                                                        "$eq": [
+                                                            "$Value.KillMethodBroad",
+                                                            "throw"
+                                                        ]
+                                                    },
+                                                    {
+                                                        "$eq": [
+                                                            "$Value.IsHeadshot",
+                                                            true
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Transition": "Failure"
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "ShowBasedOnObjectives": null,
+        "IsPrestigeObjective": null
+    },
+    "cf2f8e72-467d-4344-98f8-f1a863bb6cfe": {
+        "Name": "UI_PEACOCK_GAMECHANGERS_EDGY_CASPER_TRESPASSER_NAME",
+        "Description": "UI_PEACOCK_GAMECHANGERS_EDGY_CASPER_TRESPASSER_DESC",
+        "Icon": null,
+        "IsHidden": null,
+        "TileImage": "images/contracts/gamechangers/gamechanger_edgy_casper_trespasser.jpg",
+        "ObjectivesCategory": "primary",
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "8b8f4a89-342b-4cef-a3c2-a05e22d7b83b",
+                "Category": "primary",
+                "ExcludeFromScoring": true,
+                "OnActive": {
+                    "IfCompleted": {
+                        "Visible": false
+                    }
+                },
+                "BriefingText": "$loc UI_PEACOCK_GAMECHANGERS_EDGY_CASPER_TRESPASSER_FAIL",
+                "HUDTemplate": {
+                    "display": "$loc UI_PEACOCK_GAMECHANGERS_EDGY_CASPER_TRESPASSER_DESC",
+                    "iconType": 17
+                },
+                "Type": "statemachine",
+                "Definition": {
+                    "Scope": "session",
+                    "Context": {
+                        "KilledTargets": 0
+                    },
+                    "States": {
+                        "Start": {
+                            "Trespassing": {
+                                "Condition": {
+                                    "$eq": ["$Value.IsTrespassing", true]
+                                },
+                                "Transition": "Trespassenger"
+                            },
+                            "Kill": { "Transition": "Failure" }
+                        },
+                        "Trespassenger": {
+                            "Trespassing": {
+                                "Condition": {
+                                    "$eq": ["$Value.IsTrespassing", false]
+                                },
+                                "Transition": "Start"
+                            },
+                            "Kill": [
+                                {
+                                    "Condition": {
+                                        "$eq": ["$Value.IsTarget", true]
+                                    },
+                                    "Actions": { "$inc": "KilledTargets" }
+                                },
+                                {
+                                    "Condition": {
+                                        "$eq": ["$.KilledTargets", 4]
+                                    },
+                                    "Transition": "Success"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "cedbcd52-90c7-435f-a10e-b8da610e6110": {
+        "Name": "UI_PEACOCK_GAMECHANGERS_EDGY_CASPER_CYCLE_NAME",
+        "Description": "UI_PEACOCK_GAMECHANGERS_EDGY_CASPER_CYCLE_DESC",
+        "Icon": null,
+        "IsHidden": null,
+        "TileImage": "images/contracts/gamechangers/Gamechanger_Global_Wild_Card_Objectives.jpg",
+        "ObjectivesCategory": "primary",
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "db6f1a40-3e7b-4a87-9c86-da6e80222273",
+                "Category": "primary",
+                "ObjectiveType": "custom",
+                "Image": "images/contracts/gamechangers/Gamechanger_Global_Wild_Card_Objectives.jpg",
+                "OnActive": {
+                    "IfCompleted": {
+                        "Visible": false
+                    }
+                },
+                "ExcludeFromScoring": true,
+                "BriefingText": "$loc UI_PEACOCK_GAMECHANGERS_EDGY_CASPER_CYCLE_DESC",
+                "Type": "statemachine",
+                "Definition": {
+                    "States": {
+                        "Start": {
+                            "IntroCutEnd": {
+                                "Transition": "Success"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "2873db55-1bab-427c-9db5-72ede3a13aa6": {
+        "Name": "UI_PEACOCK_GAMECHANGERS_GLOBAL_FROZEN_DISGUISE_NAME",
+        "Description": "UI_PEACOCK_GAMECHANGERS_WET_NIAN_NEWCLOTHES_DESC",
+        "Icon": null,
+        "IsHidden": null,
+        "TileImage": "images/contracts/gamechangers/gamechanger_wet_nian_frozendisguise.jpg",
+        "ObjectivesCategory": "primary",
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "86083e73-f98b-4dc0-8f7d-f8c39f67a669",
+                "Category": "primary",
+                "BriefingText": "$loc UI_PEACOCK_GAMECHANGERS_WET_NIAN_NEWCLOTHES_FAIL",
+                "Type": "statemachine",
+                "ObjectiveType": "custom",
+                "Definition": {
+                    "Scope": "session",
+                    "Context": {
+                        "EligibleDisguises": [
+                            "4dd90d10-ac5f-404f-9c20-4428653ca7ba",
+                            "f5c73d58-a24f-4957-b80d-5efb6771ad9b",
+                            "e9660960-799e-4787-b163-fb96c192f5b6",
+                            "b3515a1e-4a32-475c-bd61-4fdae243a7e5",
+                            "86bdb741-6810-4610-8e21-799c93c71849",
+                            "fd1d39d8-db06-47b3-8f4b-eb1febf5ccb7",
+                            "553bb399-2ee0-41bb-a76b-b7ec6d49f5a3",
+                            "c5f6dd2a-3600-40be-9a82-bbf5d360c379",
+                            "9c07a86c-2d03-417b-b46f-cb433481080e",
+                            "8fc343f2-6e9a-4e06-9342-705e5b171895"
+                        ]
+                    },
+                    "States": {
+                        "Start": {
+                            "StartingSuit": {
+                                "Condition": {
+                                    "$any": {
+                                        "?": {
+                                            "$eq": ["$Value", "$.#"]
+                                        },
+                                        "in": "$.EligibleDisguises"
+                                    }
+                                },
+                                "Transition": "Failure"
+                            },
+                            "IntroCutEnd": { "Transition": "Success" }
+                        },
+                        "Success": {
+                            "Disguise": {
+                                "Condition": {
+                                    "$any": {
+                                        "?": {
+                                            "$eq": ["$Value", "$.#"]
+                                        },
+                                        "in": "$.EligibleDisguises"
+                                    }
+                                },
+                                "Transition": "Failure"
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "ShowBasedOnObjectives": null,
+        "IsPrestigeObjective": null
+    },
+    "562c54f5-8363-4942-ac1e-6dd179ab1597": {
+        "Name": "UI_PEACOCK_GAMECHANGERS_WET_NIAN_DONOTHARMCOOKS_NAME",
+        "Description": "UI_PEACOCK_GAMECHANGERS_WET_NIAN_DONOTHARMCOOKS_DESC",
+        "Icon": null,
+        "IsHidden": null,
+        "TileImage": "images/contracts/gamechangers/gamechanger_wet_nian_cooks.jpg",
+        "ObjectivesCategory": "primary",
+        "Resource": [],
+        "Objectives": [
+            {
+                "Id": "a4b7e9b8-b288-499c-b3e9-4a98f06a9de0",
+                "Category": "primary",
+                "BriefingText": "$loc UI_PEACOCK_GAMECHANGERS_WET_NIAN_DONOTHARMCOOKS_DESC",
+                "Type": "statemachine",
+                "Definition": {
+                    "Scope": "session",
+                    "Context": {
+                        "KitchenStaffs": [
+                            "92532bb0-0f92-4bbe-847f-4c248729cb14",
+                            "845d07f2-7f6d-4fe0-a0ba-d242756c6715",
+                            "8b5d93ba-88d7-4e28-b759-1cb155d91c08",
+                            "9d4c1674-678b-4adc-9496-b82f19582a6d",
+                            "55670310-d927-425b-854e-25e9b81fbb65"
+                        ]
+                    },
+                    "States": {
+                        "Start": {
+                            "-": { "Transition": "Success" }
+                        },
+                        "Success": {
+                            "Kill": {
+                                "Condition": {
+                                    "$any": {
+                                        "?": {
+                                            "$eq": [
+                                                "$.#",
+                                                "$Value.RepositoryId"
+                                            ]
+                                        },
+                                        "in": "$.KitchenStaffs"
+                                    }
+                                },
+                                "Transition": "Failure"
+                            },
+                            "Pacify": {
+                                "Condition": {
+                                    "$any": {
+                                        "?": {
+                                            "$eq": [
+                                                "$.#",
+                                                "$Value.RepositoryId"
+                                            ]
+                                        },
+                                        "in": "$.KitchenStaffs"
+                                    }
+                                },
+                                "Transition": "Failure"
+                            },
+                            "Actorsick": {
+                                "Condition": {
+                                    "$any": {
+                                        "?": {
+                                            "$eq": ["$Value.actor_R_ID", "$.#"]
+                                        },
+                                        "in": "$.KitchenStaffs"
+                                    }
+                                },
+                                "Transition": "Failure"
+                            },
+                            "NPC_Blinded": {
+                                "Condition": {
+                                    "$any": {
+                                        "?": {
+                                            "$eq": [
+                                                "$Value.RepositoryId",
+                                                "$.#"
+                                            ]
+                                        },
+                                        "in": "$.KitchenStaffs"
+                                    }
+                                },
+                                "Transition": "Failure"
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "ShowBasedOnObjectives": null,
+        "IsPrestigeObjective": null
+    }
+}

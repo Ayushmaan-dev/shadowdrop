@@ -1,0 +1,17 @@
+{
+    "name": "@peacockproject/tests",
+    "type": "module",
+    "private": true,
+    "dependencies": {
+        "@rdil/factorygirl": "^0.2.0",
+        "@vitest/ui": "^4.1.0",
+        "vite": "^8.0.1",
+        "vitest": "^4.1.0"
+    },
+    "scripts": {
+        "test:main": "vitest --run --config vitest.config.ts",
+        "test:ui": "vitest --config vitest.config.ts --ui",
+        "typecheck-ws": "tsc --noEmit",
+        "tests:update-locr-crcs": "node ./testData/scripts/updateLocrCrcData.mjs"
+    }
+}

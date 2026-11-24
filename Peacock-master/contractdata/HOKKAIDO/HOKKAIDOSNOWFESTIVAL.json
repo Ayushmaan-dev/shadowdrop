@@ -1,0 +1,64 @@
+{
+    "Data": {
+        "EnableSaving": true,
+        "Objectives": [
+            {
+                "Id": "322a9ba1-c83e-44a8-b66e-284e888e85ab",
+                "Primary": true,
+                "SuccessEvent": {
+                    "EventName": "Kill",
+                    "EventValues": {
+                        "RepositoryId": "5087ab4a-586c-4967-967c-487cc2d17c92"
+                    }
+                }
+            }
+        ],
+        "Bricks": [],
+        "GameChangers": [],
+        "VR": [
+            {
+                "Quality": "ps4_vr1",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/hokkaido/vr_overrides_snowcrane_ps4_vr1.brick",
+                    "assembly:/_PRO/scenes/missions/hokkaido/vr_overrides_low_performance.brick"
+                ]
+            },
+            {
+                "Quality": "base",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/hokkaido/vr_overrides_snowcrane.brick",
+                    "assembly:/_PRO/scenes/missions/hokkaido/vr_overrides_low_performance.brick"
+                ]
+            },
+            {
+                "Quality": "better",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/scenes/missions/hokkaido/vr_overrides_snowcrane.brick"
+                ]
+            }
+        ]
+    },
+    "Metadata": {
+        "Id": "c414a084-a7b9-43ce-b6ca-590620acd87e",
+        "IsPublished": true,
+        "CreationTimestamp": "2015-06-19T09:07:04.7390328Z",
+        "CreatorUserId": "fadb923c-e6bb-4283-a537-eb4d1150262e",
+        "Title": "UI_CONTRACT_MAMUSHI_TITLE",
+        "TileImage": "images/Contracts/Mamushi/Tile.jpg",
+        "CodeName_Hint": "Mamushi",
+        "Description": "UI_CONTRACT_MAMUSHI_TARGET_BRIEFING",
+        "BriefingVideo": "briefing_mamushi",
+        "DebriefingVideo": "debriefing_mamushi",
+        "Location": "LOCATION_HOKKAIDO_MAMUSHI",
+        "ScenePath": "assembly:/_PRO/Scenes/Missions/Hokkaido/scene_mamushi.entity",
+        "Type": "flashback",
+        "Release": "2.13.x",
+        "Entitlements": [],
+        "LastUpdate": "2025-03-27T14:29:02.8072157Z",
+        "PublicId": "010906369147"
+    },
+    "UserData": {}
+}

@@ -1,0 +1,56 @@
+{
+    "Data": {
+        "EnableSaving": false,
+        "Objectives": [
+            {
+                "Id": "124ed119-d305-42e1-822c-7290a272147d",
+                "Category": "primary",
+                "SuccessEvent": {
+                    "EventName": "Kill",
+                    "EventValues": {
+                        "RepositoryId": "79359280-26f8-4dc3-8dc5-f3ff918fbeaa"
+                    }
+                }
+            }
+        ],
+        "Bricks": [],
+        "DevOnlyBricks": [],
+        "GameChangers": [],
+        "GameChangerReferences": [],
+        "VR": [
+            {
+                "Quality": "base",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/Scenes/missions/skunk/vr_overrides_skunk.brick",
+                    "assembly:/_pro/scenes/missions/skunk/vr_overrides_low_performance.brick"
+                ]
+            },
+            {
+                "Quality": "better",
+                "Bricks": [
+                    "assembly:/_pro/Scenes/Bricks/vr_setup.brick",
+                    "assembly:/_pro/Scenes/missions/skunk/vr_overrides_skunk.brick"
+                ]
+            }
+        ]
+    },
+    "Metadata": {
+        "Id": "ea24b9a0-c942-424f-b358-2ed1cc6ecd74",
+        "IsPublished": true,
+        "CreationTimestamp": "2018-11-19T14:54:46.4353765Z",
+        "CreatorUserId": "fadb923c-e6bb-4283-a537-eb4d1150262e",
+        "Title": "UI_CONTRACT_MILKWEED_LEVEL1_TITLE",
+        "Description": "",
+        "CodeName_Hint": "Milkweed Level 1",
+        "Location": "LOCATION_NORTHAMERICA",
+        "ScenePath": "assembly:/_pro/scenes/missions/skunk/scene_skunk.entity",
+        "Type": "escalation",
+        "Release": "2.3.x escalation",
+        "InGroup": "1d5dcf3e-9682-4e32-ac11-ad6586daa456",
+        "Entitlements": ["LOCATION_NORTHAMERICA"],
+        "LastUpdate": "2025-09-25T10:59:40.7652372Z",
+        "PublicId": "022981446547"
+    },
+    "UserData": {}
+}
